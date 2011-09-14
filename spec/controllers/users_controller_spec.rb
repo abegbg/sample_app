@@ -134,6 +134,31 @@ describe UsersController do
       response.should have_selector("span.content", :content => mp1.content)
       response.should have_selector("span.content", :content => mp2.content)
     end
+    
+    it "should have one micropost counts in the sidebar" do
+      mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+      get :show, :id => @user
+      response.should have_selector("td", :content => "Microposts 1")
+    end
+
+    it "should have two microposts counts in the sidebar" do
+      mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+      mp2 = Factory(:micropost, :user => @user, :content => "Foo bar2")
+      get :show, :id => @user
+      response.should have_selector("td", :content => "Microposts 2")
+    end
+    
+    it "should not have a delete link for other users posts" do
+      #bapp
+      @user2 = Factory(:user, :email => Factory.next(:email))
+      test_sign_in(@user2)
+      mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+      mp2 = Factory(:micropost, :user => @user, :content => "Foo bar2")
+      get :show, :id => @user
+      response.should_not have_selector("a", :content => "delete")
+      
+    end
+
   end#GET show
 
 
